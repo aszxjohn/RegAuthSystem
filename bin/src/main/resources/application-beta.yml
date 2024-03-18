@@ -1,0 +1,21 @@
+Spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Taipei
+    username: root
+    password: john
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  mail:
+    host: smtp.gmail.com # 郵件服務主機
+    port: 587
+    username: shiraiforwork@gmail.com # 郵件服務帳密
+    password: kdsn glju fppr efis
+    properties:
+      mail:
+        transport:
+          protocol: smtp # 傳輸協定
+        smtp:
+          auth: true # 是否向郵件服務驗證身份
+          starttls:
+            enable: true # 是否啟用 TLS（傳輸層安全），對通訊加密
+        
