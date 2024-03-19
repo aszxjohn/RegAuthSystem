@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.aspectj.internal.lang.annotation.ajcDeclareAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import com.example.common.config.MessageCode;
 import com.example.common.config.ResponseResult;
 import com.example.common.enums.ClientStatusEnum;
 import com.example.orm.entity.EmailTemplate;
+import com.google.protobuf.ByteString.Output;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +37,8 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 	private IEmailService emailService;
 	@Autowired
 	private EmailTemplateServiceImpl emailTemplateServiceImpl;
+	
+
 	/**
 	 * 註冊新用戶和錯過驗證信的已註冊的用戶
 	 * 依照帳號的狀態去處理對應的行為
@@ -44,13 +48,14 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 	@Override
 	public ResponseEntity<Object> registerOrValidateUser(ClientDto clientDto) {
 		Timestamp currentTime = Timestamp.from(Instant.now());
-
+		String associatedApi = "register_user";
+		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
 		//初次登記會寄出驗證信件
 		if (clientDto.getStatus() == ClientStatusEnum.NEW_REGISTRATION.getStatus()) {
-
-    			return this.initiateRegistrationWithEmail(clientDto.getEmail()) ?
-    				    ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
-    				    :ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "initiateRegistrationWithEmail is fail."));	
+			ClientDto newClientDto = clientService.createClient(clientDto.getEmail(), emailExpirationTime);
+    		return this.sendVerificationEmail(newClientDto, associatedApi) ?
+    				ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
+    				:ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "initiateRegistrationWithEmail is fail."));	
 		}
     	
     	// 已經寄出過驗證信件，上次的驗證信在未過期狀況下會回傳 403 Error
@@ -62,7 +67,8 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
     	// 已經寄出過驗證信件，且上次的驗證信以過期，將更新過期時間與UUID重新寄信
     	if (clientDto != null  && clientDto.getStatus().intValue() == ClientStatusEnum.EMAIL_VERIFIED.getStatus()
     			&& currentTime.after(clientDto.getRegistrationVerificationCodeExpiryTime())) {
-    		return this.updateExpiredVerificationCodeAndResendEmail(clientDto) ? 
+    		clientService.updateClientRegistrationVerificationCodeExpiryTime(clientDto, emailExpirationTime);
+    		return this.sendVerificationEmail(clientDto, associatedApi) ? 
     				ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
 				    :ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "updateExpiredVerificationCodeAndResendEmail is fail."));
     	}
@@ -76,35 +82,14 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
     	return ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "Please contact customer service"));
 
 	}
-	/**
-	 * 第一次來往站註冊，會直接註冊資料並寄送驗證信
-	 * @param clientDto
-	 */
-	public Boolean  initiateRegistrationWithEmail(String email) {
-		//替使用者註冊
-		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
-		ClientDto clientDto = clientService.createClient(email, emailExpirationTime);
-		return this.sendVerificationEmail(clientDto);
-	}
-	
-	/**
-	 *  已經寄出過驗證信件，且上次的驗證信以過期，將更新過期時間與UUID重新寄信
-	 * @param clientDto
-	 */
-	public Boolean  updateExpiredVerificationCodeAndResendEmail(ClientDto clientDto) {
-		//替使用者註冊
-		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
-		clientService.updateClientRegistrationVerificationCodeExpiryTime(clientDto, emailExpirationTime);
-		return this.sendVerificationEmail(clientDto);
-	}
+
 	/**
 	 * 寄送註冊驗證信
 	 * @param clientDto
 	 * @param associatedApi
 	 * @return
 	 */
-	private Boolean sendVerificationEmail(ClientDto clientDto) {
-		String associatedApi = "register_user";
+	private Boolean sendVerificationEmail(ClientDto clientDto, String associatedApi) {
 	    String emailSender = systemParameterSettingService.findEmailSender();
 	    String emailRedirectUrl = systemParameterSettingService.findParametersForEmailType("email_type_" + associatedApi);
 	    Optional<EmailTemplate> emailTemplate = emailTemplateServiceImpl.findByAssociatedApi(associatedApi);
@@ -149,6 +134,28 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 		default:
 			return ResponseResult.failed(HttpBody.build(MessageCode.FAILED, null));
 		}
+	}
+	
+	
+	@Override
+	public ResponseEntity<Object> getRequestRegistrationProgress(ClientDto clientDto) {
+		String associatedApi = "register_user";
+		Timestamp currentTime = Timestamp.from(Instant.now());
+		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
+		
+		if (clientDto == null) {
+			return ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.ACCOUNT_DOES_NOT_EXIST, null));
+		}
+		
+		if (clientDto.getRegistrationProgressVerificationCode() != null  && currentTime.before(clientDto.getRegistrationProgressVerificationCodeExpiryTime())) {
+			return ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.LAST_VERIFICATION_CODE_VALID, null));
+			
+		}
+		
+		
+		
+		
+		return null;
 	}
 
 }

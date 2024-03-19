@@ -39,7 +39,7 @@ public class EmailServiceImpl implements IEmailService {
 	public Boolean sendEmailWithTemplateToUser(Optional<EmailTemplate> emailTemplate, String associatedApi, ClientDto clientDto, String emailSender, String emailRedirectUrl){
 		try {
 			emailTemplate.get().setContent(this.replaceTemplateContent(associatedApi, 
-					emailTemplate.get().getContent(), emailRedirectUrl, clientDto.getRegistrationProgressVerificationCode()));
+					emailTemplate.get().getContent(), emailRedirectUrl, clientDto.getRegistrationVerificationCode()));
 				
 			Collection<String> receivers = new ArrayList<>();
 			receivers.add(clientDto.getEmail());

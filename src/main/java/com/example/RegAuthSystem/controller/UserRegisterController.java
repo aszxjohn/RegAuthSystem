@@ -7,21 +7,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.RegAuthSystem.service.IClientService;
-import com.example.RegAuthSystem.service.IEmailService;
 import com.example.RegAuthSystem.service.IRegisterAccountService;
-import com.example.RegAuthSystem.service.ISystemParameterSettingService;
 import com.example.RegAuthSystem.service.dto.ClientDto;
 import com.example.RegAuthSystem.service.dto.RegisterUserDto;
-import com.example.common.config.HttpBody;
-import com.example.common.config.MessageCode;
-import com.example.common.config.ResponseResult;
+import com.example.RegAuthSystem.service.dto.RegistrationProgressRequestDto;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 用戶管理 Controller
@@ -52,6 +46,19 @@ public class UserRegisterController {
         return registerAccountServiceImpl.registerOrValidateUser(clientDto);
     }
 
+
+    /**
+     * 申請"註冊進度"查詢
+	 * 取得"註冊查詢進度"的驗證碼
+	 * @param emailVerifyDto
+	 * @return
+	 */
+    @PostMapping(value = "/progress")
+	public ResponseEntity<Object> requestRegistrationProgress(@RequestBody RegistrationProgressRequestDto registrationProgressRequestDto) {
+    	ClientDto clientDto = clientService.findByEmail(registrationProgressRequestDto.getEmail());
+    	return registerAccountServiceImpl.getRequestRegistrationProgress(clientDto);
+	}
+    
 	/**
 	 * 註冊查詢進度
 	 * @param verifyCode
@@ -60,6 +67,5 @@ public class UserRegisterController {
 	@GetMapping(value = "/check-progress/{verify_code}")
 	public ResponseEntity<Object> checkUserRegistrationProgress (@PathVariable(name = "verify_code") String registrationProgressVerificationCode) {
 		return registerAccountServiceImpl.checkUserRegistrationProgress(registrationProgressVerificationCode);
-		
 	}
 }
