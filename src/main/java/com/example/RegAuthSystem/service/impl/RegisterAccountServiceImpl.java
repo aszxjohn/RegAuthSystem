@@ -53,7 +53,7 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 		//初次登記會寄出驗證信件
 		if (clientDto.getStatus() == ClientStatusEnum.NEW_REGISTRATION.getStatus()) {
 			ClientDto newClientDto = clientService.createClient(clientDto.getEmail(), emailExpirationTime);
-    		return this.sendVerificationEmail(newClientDto, associatedApi) ?
+    		return this.sendVerificationEmail(newClientDto.getEmail(), newClientDto.getRegistrationVerificationCode(), associatedApi) ?
     				ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
     				:ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "initiateRegistrationWithEmail is fail."));	
 		}
@@ -68,7 +68,7 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
     	if (clientDto != null  && clientDto.getStatus().intValue() == ClientStatusEnum.EMAIL_VERIFIED.getStatus()
     			&& currentTime.after(clientDto.getRegistrationVerificationCodeExpiryTime())) {
     		clientService.updateClientRegistrationVerificationCodeExpiryTime(clientDto, emailExpirationTime);
-    		return this.sendVerificationEmail(clientDto, associatedApi) ? 
+    		return this.sendVerificationEmail(clientDto.getEmail(), clientDto.getRegistrationVerificationCode(), associatedApi) ? 
     				ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
 				    :ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "updateExpiredVerificationCodeAndResendEmail is fail."));
     	}
@@ -89,11 +89,11 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 	 * @param associatedApi
 	 * @return
 	 */
-	private Boolean sendVerificationEmail(ClientDto clientDto, String associatedApi) {
+	private Boolean sendVerificationEmail(String email, String uuid, String associatedApi) {
 	    String emailSender = systemParameterSettingService.findEmailSender();
 	    String emailRedirectUrl = systemParameterSettingService.findParametersForEmailType("email_type_" + associatedApi);
 	    Optional<EmailTemplate> emailTemplate = emailTemplateServiceImpl.findByAssociatedApi(associatedApi);
-	    return emailService.sendEmailWithTemplateToUser(emailTemplate, associatedApi, clientDto, emailSender, emailRedirectUrl);
+	    return emailService.sendEmailWithTemplateToUser(emailTemplate, associatedApi, email, uuid, emailSender, emailRedirectUrl);
 	}
 	
 	/**
@@ -116,30 +116,32 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 		
 		switch (ClientStatusEnum.getClientStatusEnum(clientDto.getStatus())) {
 		case NEW_REGISTRATION: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.NEW_REGISTRATION.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.NEW_REGISTRATION.getDescription()));
 		case EMAIL_VERIFIED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.EMAIL_VERIFIED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.EMAIL_VERIFIED.getDescription()));
 		case BASIC_INFO_SUBMITTED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BASIC_INFO_SUBMITTED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BASIC_INFO_SUBMITTED.getDescription()));
 		case ASSISTANT_REVIEWED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.ASSISTANT_REVIEWED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.ASSISTANT_REVIEWED.getDescription()));
 		case STAFF_REVIEWED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.STAFF_REVIEWED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.STAFF_REVIEWED.getDescription()));
 		case MANAGER_REVIEWED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.MANAGER_REVIEWED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.MANAGER_REVIEWED.getDescription()));
 		case SUSPENDED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.SUSPENDED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.SUSPENDED.getDescription()));
 		case BANNED: 
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BANNED.getDeclaringClass()));
+			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BANNED.getDescription()));
 		default:
 			return ResponseResult.failed(HttpBody.build(MessageCode.FAILED, null));
 		}
 	}
 	
-	
+	/**
+	 * 使用者會透過Email取得"進度查詢的驗證碼"
+	 */
 	@Override
-	public ResponseEntity<Object> getRequestRegistrationProgress(ClientDto clientDto) {
-		String associatedApi = "register_user";
+	public ResponseEntity<Object> getRegistrationProgress(ClientDto clientDto) {
+		String associatedApi = "registration_progress";
 		Timestamp currentTime = Timestamp.from(Instant.now());
 		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
 		
@@ -151,11 +153,11 @@ public class RegisterAccountServiceImpl  implements IRegisterAccountService{
 			return ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.LAST_VERIFICATION_CODE_VALID, null));
 			
 		}
+		clientService.updateClientRegistrationProgressVerificationCodeExpiryTime(clientDto, emailExpirationTime);
+		return this.sendVerificationEmail(clientDto.getEmail(), clientDto.getRegistrationProgressVerificationCode(), associatedApi) ?
+				ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
+				:ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "getRegistrationProgress is fail."));	
 		
-		
-		
-		
-		return null;
 	}
 
 }

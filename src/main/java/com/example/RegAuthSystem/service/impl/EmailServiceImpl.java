@@ -36,13 +36,13 @@ public class EmailServiceImpl implements IEmailService {
 	 * @return
 	 */
 	@Override
-	public Boolean sendEmailWithTemplateToUser(Optional<EmailTemplate> emailTemplate, String associatedApi, ClientDto clientDto, String emailSender, String emailRedirectUrl){
+	public Boolean sendEmailWithTemplateToUser(Optional<EmailTemplate> emailTemplate, String associatedApi, String email, String uuid, String emailSender, String emailRedirectUrl){
 		try {
 			emailTemplate.get().setContent(this.replaceTemplateContent(associatedApi, 
-					emailTemplate.get().getContent(), emailRedirectUrl, clientDto.getRegistrationVerificationCode()));
+					emailTemplate.get().getContent(), emailRedirectUrl, uuid));
 				
 			Collection<String> receivers = new ArrayList<>();
-			receivers.add(clientDto.getEmail());
+			receivers.add(email);
 				
 			this.sendEmail(emailSender, receivers, emailTemplate.get().getSubject(), emailTemplate.get().getContent());
 			return true;
@@ -66,7 +66,10 @@ public class EmailServiceImpl implements IEmailService {
 		String result = "Url異常，請聯繫客服";
         switch (correspondingApi) {
 	        case "register_user":	// 註冊信件
-	        	result = emailBody.replaceAll( "\\{\\{URL-Register\\}\\}", altText + GUID);
+	        	result = emailBody.replaceAll( "\\{\\{register_user\\}\\}", altText + GUID);
+	        	break;
+	        case "registration_progress":
+	        	result = emailBody.replaceAll( "\\{\\{registration_progress\\}\\}", altText + GUID);
 	        	break;
         }
         

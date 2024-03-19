@@ -22,6 +22,11 @@ public interface IRegisterAccountService {
 	 */
 	ResponseEntity<Object> checkUserRegistrationProgress(String verifyCode);
 
-	ResponseEntity<Object> getRequestRegistrationProgress(ClientDto clientDto);
+	/**
+	 * 使用者會透過Email取得"進度查詢的驗證碼"
+	 * @param clientDto
+	 * @return
+	 */
+	ResponseEntity<Object> getRegistrationProgress(ClientDto clientDto);
 
 }

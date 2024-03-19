@@ -27,7 +27,7 @@ public interface IEmailService {
 	 * @param emailRedirectUrl
 	 * @return
 	 */
-	Boolean sendEmailWithTemplateToUser(Optional<EmailTemplate> emailTemplate, String associatedApi,
-			ClientDto clientDto, String emailSender, String emailRedirectUrl);
+	Boolean sendEmailWithTemplateToUser(Optional<EmailTemplate> emailTemplate, String associatedApi, String uuid,
+			String email, String emailSender, String emailRedirectUrl);
 
 }

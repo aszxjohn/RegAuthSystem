@@ -66,19 +66,17 @@ public class ClientServiceImpl implements IClientService {
 	 * 更新Client的Email RegistrationProgressVerificationCodeExpiryTime
 	 * @param clientDto
 	 * @param emailExpirationTime
-	 * @return
 	 */
 	@Override
-	public ClientDto updateClientRegistrationVerificationCodeExpiryTime(ClientDto clientDto, Long emailExpirationTime) {
+	public void updateClientRegistrationVerificationCodeExpiryTime(ClientDto clientDto, Long emailExpirationTime) {
 		clientDto.setRegistrationVerificationCode(UuidUtil.uuidGenerate());
 		clientDto.setRegistrationVerificationCodeExpiryTime(TimeUtil.getExpiredTime(emailExpirationTime));
-		return clientMapper.toDto(clientRepository.save(clientMapper.toEntity(clientDto)));
+		clientRepository.save(clientMapper.toEntity(clientDto));
 	}
 
 	/**
 	 * 透過 RegistrationProgressVerificationCode 尋找Client
 	 * @param registrationProgressVerificationCode
-	 * @return
 	 */
 	@Override
 	public ClientDto findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode) {
@@ -86,6 +84,14 @@ public class ClientServiceImpl implements IClientService {
 				.map(clientMapper :: toDto)
 				.orElse(null);
 		           
+	}
+
+	@Override
+	public void updateClientRegistrationProgressVerificationCodeExpiryTime(ClientDto clientDto,
+			Long emailExpirationTime) {
+		clientDto.setRegistrationProgressVerificationCode(UuidUtil.uuidGenerate());
+		clientDto.setRegistrationProgressVerificationCodeExpiryTime(TimeUtil.getExpiredTime(emailExpirationTime));
+		clientRepository.save(clientMapper.toEntity(clientDto));
 	}
 
 }

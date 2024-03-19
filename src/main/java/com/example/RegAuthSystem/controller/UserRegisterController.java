@@ -56,7 +56,7 @@ public class UserRegisterController {
     @PostMapping(value = "/progress")
 	public ResponseEntity<Object> requestRegistrationProgress(@RequestBody RegistrationProgressRequestDto registrationProgressRequestDto) {
     	ClientDto clientDto = clientService.findByEmail(registrationProgressRequestDto.getEmail());
-    	return registerAccountServiceImpl.getRequestRegistrationProgress(clientDto);
+    	return registerAccountServiceImpl.getRegistrationProgress(clientDto);
 	}
     
 	/**
