@@ -6,11 +6,12 @@ import com.example.orm.base.BaseDto;
 
 import lombok.Data;
 
+
 @Data
-public class ClientDto extends BaseDto {
+public class ClientInfoDto  extends BaseDto{
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private Long clientId;
 
 	private Long clientInfoId;
@@ -26,7 +27,7 @@ public class ClientDto extends BaseDto {
 	private Integer loginFailCount;
 
 	private Timestamp loginSuccessDate;
-
+	
 	private String email;
 
 	private String password;
@@ -34,9 +35,9 @@ public class ClientDto extends BaseDto {
 	private Long registerReviewId;
 
 	private String registrationVerificationCode;
-
+	
 	private Timestamp registrationVerificationCodeExpiryTime;
-
+	
 	private String registrationProgressVerificationCode;
 
 	private Timestamp registrationProgressVerificationCodeExpiryTime;

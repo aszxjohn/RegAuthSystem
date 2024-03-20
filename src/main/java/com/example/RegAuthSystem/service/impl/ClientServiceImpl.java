@@ -19,30 +19,29 @@ public class ClientServiceImpl implements IClientService {
 
 	@Autowired
 	private ClientRepository clientRepository;
-	
-	
+
 	@Autowired
 	private ClientMapper clientMapper;
-	
+
 	/**
 	 * 從透過Email查詢客戶資料
+	 * 
 	 * @param email
 	 * @return
 	 */
 	@Override
 	public ClientDto findByEmail(String email) {
-	    return clientRepository.findByEmail(email)
-	            .map(clientMapper::toDto)
-	            .orElseGet(() -> {
-	                ClientDto clientDto = new ClientDto();
-	                clientDto.setEmail(email);
-	                clientDto.setStatus(ClientStatusEnum.NEW_REGISTRATION.getStatus());
-	                return clientDto;
-	            });
+		return clientRepository.findByEmail(email).map(clientMapper::toDto).orElseGet(() -> {
+			ClientDto clientDto = new ClientDto();
+			clientDto.setEmail(email);
+			clientDto.setStatus(ClientStatusEnum.NEW_REGISTRATION.getStatus());
+			return clientDto;
+		});
 	}
 
 	/**
 	 * 創立新的Client資料
+	 * 
 	 * @param email
 	 * @param emailExpirationTime
 	 * @return
@@ -64,6 +63,7 @@ public class ClientServiceImpl implements IClientService {
 
 	/**
 	 * 更新Client的Email RegistrationProgressVerificationCodeExpiryTime
+	 * 
 	 * @param clientDto
 	 * @param emailExpirationTime
 	 */
@@ -76,22 +76,37 @@ public class ClientServiceImpl implements IClientService {
 
 	/**
 	 * 透過 RegistrationProgressVerificationCode 尋找Client
+	 * 
 	 * @param registrationProgressVerificationCode
 	 */
 	@Override
 	public ClientDto findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode) {
 		return clientRepository.findByRegistrationProgressVerificationCode(registrationProgressVerificationCode)
-				.map(clientMapper :: toDto)
-				.orElse(null);
-		           
+				.map(clientMapper::toDto).orElse(null);
+
 	}
 
+	/**
+	 * 更新使用者的註冊進度驗證碼
+	 * 
+	 * @param clientDto
+	 * @param emailExpirationTime
+	 */
 	@Override
 	public void updateClientRegistrationProgressVerificationCodeExpiryTime(ClientDto clientDto,
 			Long emailExpirationTime) {
 		clientDto.setRegistrationProgressVerificationCode(UuidUtil.uuidGenerate());
 		clientDto.setRegistrationProgressVerificationCodeExpiryTime(TimeUtil.getExpiredTime(emailExpirationTime));
 		clientRepository.save(clientMapper.toEntity(clientDto));
+	}
+
+	/**
+	 * 透過註冊驗證碼來查詢Client資料
+	 */
+	@Override
+	public ClientDto findByRegistrationVerificationCode(String registrationVerificationCode) {
+		return clientRepository.findByRegistrationVerificationCode(registrationVerificationCode)
+				.map(clientMapper::toDto).orElse(null);
 	}
 
 }

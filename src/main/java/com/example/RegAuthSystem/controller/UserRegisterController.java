@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.RegAuthSystem.service.IClientService;
 import com.example.RegAuthSystem.service.IRegisterAccountService;
 import com.example.RegAuthSystem.service.dto.ClientDto;
+import com.example.RegAuthSystem.service.dto.ClientInfoDto;
 import com.example.RegAuthSystem.service.dto.RegisterUserDto;
 import com.example.RegAuthSystem.service.dto.RegistrationProgressRequestDto;
 
@@ -26,46 +27,60 @@ import jakarta.validation.Valid;
 @RequestMapping("/user/register")
 public class UserRegisterController {
 
-    @Autowired
-    private IClientService clientService;
-    @Autowired
-    private IRegisterAccountService registerAccountServiceImpl;
-    /**
-     * 注冊新用戶
-     * 用戶通過此接口進行註冊，現階段只支援Email註冊。
-     * 狀況一: 初次登記會寄出驗證信件
-     * 狀況二: 已經寄出過驗證信件，上次的驗證信在未過期狀況下會回傳 400 Error
-     * 狀況三: 已經寄出過驗證信件，且上次的驗證信以過期，將更新過期時間與UUID重新寄信
-     * POST 請求路徑：/user/register
-     * 
-     */
-    @PostMapping
-    public ResponseEntity<Object> registerUser(@RequestBody @Valid RegisterUserDto registerUserDto) {
-        // 實現註冊功能的程式碼
-    	ClientDto clientDto = clientService.findByEmail(registerUserDto.getEmail());
-        return registerAccountServiceImpl.registerOrValidateUser(clientDto);
-    }
+	@Autowired
+	private IClientService clientService;
+	@Autowired
+	private IRegisterAccountService registerAccountServiceImpl;
 
+	/**
+	 * 注冊新用戶 用戶通過此接口進行註冊，現階段只支援Email註冊。 狀況一: 初次登記會寄出驗證信件 狀況二:
+	 * 已經寄出過驗證信件，上次的驗證信在未過期狀況下會回傳 400 Error 狀況三:
+	 * 已經寄出過驗證信件，且上次的驗證信以過期，將更新過期時間與UUID重新寄信 POST 請求路徑：/user/register
+	 * 
+	 */
+	@PostMapping
+	public ResponseEntity<Object> registerUser(@RequestBody @Valid RegisterUserDto registerUserDto) {
+		// 實現註冊功能的程式碼
+		ClientDto clientDto = clientService.findByEmail(registerUserDto.getEmail());
+		return registerAccountServiceImpl.registerOrValidateUser(clientDto);
+	}
 
-    /**
-     * 申請"註冊進度"查詢
-	 * 取得"註冊查詢進度"的驗證碼
+	/**
+	 * 
+	 * @param registrationVerificationCode
+	 * @param clientInfoDto
+	 * @return
+	 */
+	@PostMapping(value = "/profile/{verify_code}")
+	public ResponseEntity<Object> updateUserProfile(
+			@PathVariable(name = "verify_code") String registrationVerificationCode,
+			@RequestBody ClientInfoDto clientInfoDto) {
+		ClientDto clientDto = clientService.findByRegistrationVerificationCode(registrationVerificationCode);
+		return registerAccountServiceImpl.updateUserProfile(clientDto, clientInfoDto);
+	}
+
+	/**
+	 * 申請"註冊進度"查詢 取得"註冊查詢進度"的驗證碼
+	 * 
 	 * @param emailVerifyDto
 	 * @return
 	 */
-    @PostMapping(value = "/progress")
-	public ResponseEntity<Object> requestRegistrationProgress(@RequestBody RegistrationProgressRequestDto registrationProgressRequestDto) {
-    	ClientDto clientDto = clientService.findByEmail(registrationProgressRequestDto.getEmail());
-    	return registerAccountServiceImpl.getRegistrationProgress(clientDto);
+	@PostMapping(value = "/progress")
+	public ResponseEntity<Object> requestRegistrationProgress(
+			@RequestBody RegistrationProgressRequestDto registrationProgressRequestDto) {
+		ClientDto clientDto = clientService.findByEmail(registrationProgressRequestDto.getEmail());
+		return registerAccountServiceImpl.getRegistrationProgress(clientDto);
 	}
-    
+
 	/**
 	 * 註冊查詢進度
+	 * 
 	 * @param verifyCode
 	 * @return
 	 */
 	@GetMapping(value = "/check-progress/{verify_code}")
-	public ResponseEntity<Object> checkUserRegistrationProgress (@PathVariable(name = "verify_code") String registrationProgressVerificationCode) {
+	public ResponseEntity<Object> checkUserRegistrationProgress(
+			@PathVariable(name = "verify_code") String registrationProgressVerificationCode) {
 		return registerAccountServiceImpl.checkUserRegistrationProgress(registrationProgressVerificationCode);
 	}
 }

@@ -3,6 +3,7 @@ package com.example.RegAuthSystem.service;
 import org.springframework.http.ResponseEntity;
 
 import com.example.RegAuthSystem.service.dto.ClientDto;
+import com.example.RegAuthSystem.service.dto.ClientInfoDto;
 import com.google.protobuf.ByteString.Output;
 
 public interface IRegisterAccountService {
@@ -28,5 +29,7 @@ public interface IRegisterAccountService {
 	 * @return
 	 */
 	ResponseEntity<Object> getRegistrationProgress(ClientDto clientDto);
+
+	ResponseEntity<Object> updateUserProfile(ClientDto clientDto, ClientInfoDto clientInfoDto);
 
 }

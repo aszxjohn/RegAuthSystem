@@ -1,6 +1,7 @@
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\security\dto\SecurityUserDetails.java
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\IEmailTemplateService.java
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\dto\ClientDto.java
+D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\dto\ClientInfoDto.java
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\impl\EmailTemplateServiceImpl.java
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\dto\RegisterUserDto.java
 D:\Deploy\demo\RegAuthSystem\src\main\java\com\example\RegAuthSystem\service\IEmailService.java

@@ -33,6 +33,18 @@ public interface IClientService {
 	 */
 	ClientDto findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode);
 
+	/**
+	 * 更新使用者的註冊進度驗證碼
+	 * @param clientDto
+	 * @param emailExpirationTime
+	 */
 	void updateClientRegistrationProgressVerificationCodeExpiryTime(ClientDto clientDto, Long emailExpirationTime);
+
+	/**
+	 * 透過客戶的註冊驗證碼查詢Client資料
+	 * @param registrationVerificationCode
+	 * @return
+	 */
+	ClientDto findByRegistrationVerificationCode(String registrationVerificationCode);
 
 }

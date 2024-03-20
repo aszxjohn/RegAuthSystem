@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 import com.example.RegAuthSystem.security.utils.SecurityUtil;
 import com.example.common.config.JpaAuditorBaseConfig;
 
-
-
 /**
- * @author  John
+ * @author John
  * @date : 2024/03/13
  */
 @Configuration
@@ -22,12 +20,13 @@ public class JpaAuditorConfig extends JpaAuditorBaseConfig {
 	@Autowired
 	SecurityUtil securityUtil;
 
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        try {
+	@Override
+	public Optional<String> getCurrentAuditor() {
+		try {
 
-            return Optional.of(securityUtil.getCurrentUsername());
-        }catch (Exception ex){}
-        return Optional.of("System");
-    }
+			return Optional.of(securityUtil.getCurrentUsername());
+		} catch (Exception ex) {
+		}
+		return Optional.of("System");
+	}
 }

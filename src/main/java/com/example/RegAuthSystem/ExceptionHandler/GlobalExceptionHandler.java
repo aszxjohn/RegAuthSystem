@@ -21,20 +21,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex) {
-        ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();
-        String defaultMessage = constraintViolation.getMessage();
-        return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, defaultMessage));
-    }
-    
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    	String defaultMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex) {
+		ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();
+		String defaultMessage = constraintViolation.getMessage();
+		return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, defaultMessage));
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		String defaultMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 		return ResponseResult.badRequest(HttpBody.build(MessageCode.VALIDATE_ARGS_FAILED, defaultMessage));
 	}
-   
-    
 
 }
