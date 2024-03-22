@@ -1,4 +1,5 @@
 com\example\RegAuthSystem\controller\UserRegisterController.class
+com\example\RegAuthSystem\service\dto\ClientInfoDto.class
 com\example\RegAuthSystem\service\ISystemParameterSettingService.class
 com\example\RegAuthSystem\config\JpaAuditorConfig.class
 com\example\RegAuthSystem\service\IClientService.class

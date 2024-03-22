@@ -2,15 +2,14 @@ package com.example.RegAuthSystem.service.impl;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.Optional;
 
-import org.aspectj.internal.lang.annotation.ajcDeclareAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.example.RegAuthSystem.mapper.ClientMapper;
+import com.example.RegAuthSystem.service.IClientInfoService;
 import com.example.RegAuthSystem.service.IClientService;
 import com.example.RegAuthSystem.service.IEmailService;
 import com.example.RegAuthSystem.service.IRegisterAccountService;
@@ -21,8 +20,8 @@ import com.example.common.config.HttpBody;
 import com.example.common.config.MessageCode;
 import com.example.common.config.ResponseResult;
 import com.example.common.enums.ClientStatusEnum;
+import com.example.orm.entity.Client;
 import com.example.orm.entity.EmailTemplate;
-import com.google.protobuf.ByteString.Output;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +37,9 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 	private IEmailService emailService;
 	@Autowired
 	private EmailTemplateServiceImpl emailTemplateServiceImpl;
+	@Autowired
+	private IClientInfoService clientInfoService;
+
 
 	/**
 	 * 註冊新用戶和錯過驗證信的已註冊的用戶 依照帳號的狀態去處理對應的行為
@@ -177,7 +179,8 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 
 	@Override
 	public ResponseEntity<Object> updateUserProfile(ClientDto clientDto, ClientInfoDto clientInfoDto) {
-		// TODO Auto-generated method stub
+		clientInfoDto.setClientDto(clientDto);
+		clientInfoService.updateUserProfile(clientInfoDto);
 		return null;
 	}
 

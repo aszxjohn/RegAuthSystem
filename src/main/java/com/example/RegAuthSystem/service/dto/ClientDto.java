@@ -54,5 +54,8 @@ public class ClientDto extends BaseDto {
 	private String twoFactorCode;
 
 	private Timestamp twoFactorCodeExpiryTime;
+	
+	private ClientInfoDto clientInfoDto;
+		
 
 }

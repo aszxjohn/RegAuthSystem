@@ -9,49 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-20T17:30:22+0800",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.3 (Eclipse Adoptium)"
+    date = "2024-03-22T16:00:19+0800",
+    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 1.4.100.v20220318-0906, environment: Java 17.0.3 (Eclipse Adoptium)"
 )
 @Component
 public class ClientMapperImpl implements ClientMapper {
-
-    @Override
-    public Client toEntity(ClientDto dto) {
-        if ( dto == null ) {
-            return null;
-        }
-
-        Client client = new Client();
-
-        client.setCreateUser( dto.getCreateUser() );
-        client.setUpdateUser( dto.getUpdateUser() );
-        client.setCreateDate( dto.getCreateDate() );
-        client.setUpdateDate( dto.getUpdateDate() );
-        client.setClientId( dto.getClientId() );
-        client.setClientInfoId( dto.getClientInfoId() );
-        client.setCustomerNumber( dto.getCustomerNumber() );
-        client.setEnableTwoFactor( dto.getEnableTwoFactor() );
-        client.setIsLock( dto.getIsLock() );
-        client.setIsLockedTime( dto.getIsLockedTime() );
-        client.setLoginFailCount( dto.getLoginFailCount() );
-        client.setLoginSuccessDate( dto.getLoginSuccessDate() );
-        client.setEmail( dto.getEmail() );
-        client.setPassword( dto.getPassword() );
-        client.setRegisterReviewId( dto.getRegisterReviewId() );
-        client.setRegistrationVerificationCode( dto.getRegistrationVerificationCode() );
-        client.setRegistrationVerificationCodeExpiryTime( dto.getRegistrationVerificationCodeExpiryTime() );
-        client.setRegistrationProgressVerificationCode( dto.getRegistrationProgressVerificationCode() );
-        client.setRegistrationProgressVerificationCodeExpiryTime( dto.getRegistrationProgressVerificationCodeExpiryTime() );
-        client.setResetPasswordVerificationCodeEmail( dto.getResetPasswordVerificationCodeEmail() );
-        client.setResetPasswordVerificationCodeExpiryTime( dto.getResetPasswordVerificationCodeExpiryTime() );
-        client.setSetPasswordVerificationCodeEmail( dto.getSetPasswordVerificationCodeEmail() );
-        client.setSetPasswordVerificationCodeExpiryTime( dto.getSetPasswordVerificationCodeExpiryTime() );
-        client.setStatus( dto.getStatus() );
-        client.setTwoFactorCode( dto.getTwoFactorCode() );
-        client.setTwoFactorCodeExpiryTime( dto.getTwoFactorCodeExpiryTime() );
-
-        return client;
-    }
 
     @Override
     public ClientDto toDto(Client entity) {
@@ -61,25 +23,25 @@ public class ClientMapperImpl implements ClientMapper {
 
         ClientDto clientDto = new ClientDto();
 
-        clientDto.setCreateUser( entity.getCreateUser() );
-        clientDto.setUpdateUser( entity.getUpdateUser() );
         clientDto.setCreateDate( entity.getCreateDate() );
+        clientDto.setCreateUser( entity.getCreateUser() );
         clientDto.setUpdateDate( entity.getUpdateDate() );
+        clientDto.setUpdateUser( entity.getUpdateUser() );
         clientDto.setClientId( entity.getClientId() );
         clientDto.setClientInfoId( entity.getClientInfoId() );
         clientDto.setCustomerNumber( entity.getCustomerNumber() );
+        clientDto.setEmail( entity.getEmail() );
         clientDto.setEnableTwoFactor( entity.getEnableTwoFactor() );
         clientDto.setIsLock( entity.getIsLock() );
         clientDto.setIsLockedTime( entity.getIsLockedTime() );
         clientDto.setLoginFailCount( entity.getLoginFailCount() );
         clientDto.setLoginSuccessDate( entity.getLoginSuccessDate() );
-        clientDto.setEmail( entity.getEmail() );
         clientDto.setPassword( entity.getPassword() );
         clientDto.setRegisterReviewId( entity.getRegisterReviewId() );
-        clientDto.setRegistrationVerificationCode( entity.getRegistrationVerificationCode() );
-        clientDto.setRegistrationVerificationCodeExpiryTime( entity.getRegistrationVerificationCodeExpiryTime() );
         clientDto.setRegistrationProgressVerificationCode( entity.getRegistrationProgressVerificationCode() );
         clientDto.setRegistrationProgressVerificationCodeExpiryTime( entity.getRegistrationProgressVerificationCodeExpiryTime() );
+        clientDto.setRegistrationVerificationCode( entity.getRegistrationVerificationCode() );
+        clientDto.setRegistrationVerificationCodeExpiryTime( entity.getRegistrationVerificationCodeExpiryTime() );
         clientDto.setResetPasswordVerificationCodeEmail( entity.getResetPasswordVerificationCodeEmail() );
         clientDto.setResetPasswordVerificationCodeExpiryTime( entity.getResetPasswordVerificationCodeExpiryTime() );
         clientDto.setSetPasswordVerificationCodeEmail( entity.getSetPasswordVerificationCodeEmail() );
@@ -92,20 +54,6 @@ public class ClientMapperImpl implements ClientMapper {
     }
 
     @Override
-    public List<Client> toEntity(List<ClientDto> dtoList) {
-        if ( dtoList == null ) {
-            return null;
-        }
-
-        List<Client> list = new ArrayList<Client>( dtoList.size() );
-        for ( ClientDto clientDto : dtoList ) {
-            list.add( toEntity( clientDto ) );
-        }
-
-        return list;
-    }
-
-    @Override
     public List<ClientDto> toDto(List<Client> entityList) {
         if ( entityList == null ) {
             return null;
@@ -114,6 +62,58 @@ public class ClientMapperImpl implements ClientMapper {
         List<ClientDto> list = new ArrayList<ClientDto>( entityList.size() );
         for ( Client client : entityList ) {
             list.add( toDto( client ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public Client toEntity(ClientDto dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        Client client = new Client();
+
+        client.setCreateDate( dto.getCreateDate() );
+        client.setCreateUser( dto.getCreateUser() );
+        client.setUpdateDate( dto.getUpdateDate() );
+        client.setUpdateUser( dto.getUpdateUser() );
+        client.setClientId( dto.getClientId() );
+        client.setClientInfoId( dto.getClientInfoId() );
+        client.setCustomerNumber( dto.getCustomerNumber() );
+        client.setEmail( dto.getEmail() );
+        client.setEnableTwoFactor( dto.getEnableTwoFactor() );
+        client.setIsLock( dto.getIsLock() );
+        client.setIsLockedTime( dto.getIsLockedTime() );
+        client.setLoginFailCount( dto.getLoginFailCount() );
+        client.setLoginSuccessDate( dto.getLoginSuccessDate() );
+        client.setPassword( dto.getPassword() );
+        client.setRegisterReviewId( dto.getRegisterReviewId() );
+        client.setRegistrationProgressVerificationCode( dto.getRegistrationProgressVerificationCode() );
+        client.setRegistrationProgressVerificationCodeExpiryTime( dto.getRegistrationProgressVerificationCodeExpiryTime() );
+        client.setRegistrationVerificationCode( dto.getRegistrationVerificationCode() );
+        client.setRegistrationVerificationCodeExpiryTime( dto.getRegistrationVerificationCodeExpiryTime() );
+        client.setResetPasswordVerificationCodeEmail( dto.getResetPasswordVerificationCodeEmail() );
+        client.setResetPasswordVerificationCodeExpiryTime( dto.getResetPasswordVerificationCodeExpiryTime() );
+        client.setSetPasswordVerificationCodeEmail( dto.getSetPasswordVerificationCodeEmail() );
+        client.setSetPasswordVerificationCodeExpiryTime( dto.getSetPasswordVerificationCodeExpiryTime() );
+        client.setStatus( dto.getStatus() );
+        client.setTwoFactorCode( dto.getTwoFactorCode() );
+        client.setTwoFactorCodeExpiryTime( dto.getTwoFactorCodeExpiryTime() );
+
+        return client;
+    }
+
+    @Override
+    public List<Client> toEntity(List<ClientDto> dtoList) {
+        if ( dtoList == null ) {
+            return null;
+        }
+
+        List<Client> list = new ArrayList<Client>( dtoList.size() );
+        for ( ClientDto clientDto : dtoList ) {
+            list.add( toEntity( clientDto ) );
         }
 
         return list;
