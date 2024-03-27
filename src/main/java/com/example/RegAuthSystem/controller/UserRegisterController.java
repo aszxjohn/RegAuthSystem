@@ -41,7 +41,7 @@ public class UserRegisterController {
 	@PostMapping
 	public ResponseEntity<Object> registerUser(@RequestBody @Valid RegisterUserDto registerUserDto) {
 		// 實現註冊功能的程式碼
-		ClientDto clientDto = clientService.findByEmail(registerUserDto.getEmail());
+		ClientDto clientDto = clientService.controllerFindByEmail(registerUserDto.getEmail());
 		return registerAccountServiceImpl.registerOrValidateUser(clientDto);
 	}
 
@@ -68,7 +68,7 @@ public class UserRegisterController {
 	@PostMapping(value = "/progress")
 	public ResponseEntity<Object> requestRegistrationProgress(
 			@RequestBody RegistrationProgressRequestDto registrationProgressRequestDto) {
-		ClientDto clientDto = clientService.findByEmail(registrationProgressRequestDto.getEmail());
+		ClientDto clientDto = clientService.controllerFindByEmail(registrationProgressRequestDto.getEmail());
 		return registerAccountServiceImpl.getRegistrationProgress(clientDto);
 	}
 

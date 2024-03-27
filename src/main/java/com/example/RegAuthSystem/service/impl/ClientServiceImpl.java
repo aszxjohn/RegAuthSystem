@@ -34,8 +34,13 @@ public class ClientServiceImpl implements IClientService {
 	 * @return
 	 */
 	@Override
-	public ClientDto findByEmail(String email) {
-		return clientRepository.findByEmail(email).map(clientMapper::toDto).orElse(null);
+	public ClientDto controllerFindByEmail(String email) {
+		return clientRepository.findByEmail(email).map(clientMapper::toDto).orElseGet(() -> {
+			ClientDto clientDto = new ClientDto();
+			clientDto.setEmail(email);
+			clientDto.setStatus(ClientStatusEnum.NEW_REGISTRATION.getStatus());
+			return clientDto;
+		});
 	}
 
 	/**
@@ -116,6 +121,11 @@ public class ClientServiceImpl implements IClientService {
 			log.info("updateUserProfile fail : " + e.getMessage());
 			return false;
 		}
+	}
+
+	@Override
+	public Optional<Client> serviceFindByEmail(String email) {
+		return clientRepository.findByEmail(email);
 	}
 
 }

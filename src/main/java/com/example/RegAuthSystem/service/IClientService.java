@@ -11,7 +11,7 @@ public interface IClientService {
 	 * 從透過Email查詢客戶資料
 	 * @param email
 	 */
-	ClientDto findByEmail(String email);
+	ClientDto controllerFindByEmail(String email);
 
 	/**
 	 * 創立新的Client資料
@@ -48,5 +48,8 @@ public interface IClientService {
 	ClientDto findByRegistrationVerificationCode(String registrationVerificationCode);
 
 	boolean updateUserProfile(Client client);
+
+	Optional<Client> serviceFindByEmail(String email);
+
 
 }
