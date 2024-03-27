@@ -1,15 +1,18 @@
 package com.example.RegAuthSystem.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.RegAuthSystem.mapper.ClientInfoMapper;
 import com.example.RegAuthSystem.service.IClientInfoService;
-import com.example.RegAuthSystem.service.dto.ClientInfoDto;
 import com.example.orm.entity.ClientInfo;
 import com.example.orm.repository.ClientInfoRepository;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class ClientInfoServiceImpl implements IClientInfoService{
 
@@ -18,14 +21,10 @@ public class ClientInfoServiceImpl implements IClientInfoService{
 	@Autowired
 	ClientInfoMapper clientInfoMapper;
 
-	public ClientInfoDto findByClientId(Long clientId) {
-		return clientInfoRepository.findByClientId(clientId).map(clientInfoMapper::toDto).orElse(null);
+	@Override
+	public Optional<ClientInfo> findByClientId(Long clientId) {
+		return clientInfoRepository.findByClient_ClientId(clientId);
 	}
 
-	@Override
-	public void updateUserProfile(ClientInfoDto clientInfoDto) {
-		// TODO Auto-generated method stub
-//		ㄏㄛ
-//		clientInfoRepository.save(null);
-	}
+
 }

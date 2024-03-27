@@ -13,8 +13,6 @@ public class ClientDto extends BaseDto {
 
 	private Long clientId;
 
-	private Long clientInfoId;
-
 	private String customerNumber;
 
 	private Boolean enableTwoFactor;

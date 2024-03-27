@@ -1,9 +1,12 @@
 package com.example.RegAuthSystem.service;
 
-import com.example.RegAuthSystem.service.dto.ClientInfoDto;
+import java.util.Optional;
+
+import com.example.orm.entity.ClientInfo;
 
 public interface IClientInfoService {
 
-	void updateUserProfile(ClientInfoDto clientInfoDto);
+	Optional<ClientInfo> findByClientId(Long clientId);
+
 
 }

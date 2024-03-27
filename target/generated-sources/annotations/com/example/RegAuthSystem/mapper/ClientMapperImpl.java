@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-22T17:24:54+0800",
+    date = "2024-03-27T13:03:53+0800",
     comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 1.4.100.v20220318-0906, environment: Java 17.0.3 (Eclipse Adoptium)"
 )
 @Component
@@ -28,7 +28,6 @@ public class ClientMapperImpl implements ClientMapper {
         clientDto.setUpdateDate( entity.getUpdateDate() );
         clientDto.setUpdateUser( entity.getUpdateUser() );
         clientDto.setClientId( entity.getClientId() );
-        clientDto.setClientInfoId( entity.getClientInfoId() );
         clientDto.setCustomerNumber( entity.getCustomerNumber() );
         clientDto.setEmail( entity.getEmail() );
         clientDto.setEnableTwoFactor( entity.getEnableTwoFactor() );
@@ -80,7 +79,6 @@ public class ClientMapperImpl implements ClientMapper {
         client.setUpdateDate( dto.getUpdateDate() );
         client.setUpdateUser( dto.getUpdateUser() );
         client.setClientId( dto.getClientId() );
-        client.setClientInfoId( dto.getClientInfoId() );
         client.setCustomerNumber( dto.getCustomerNumber() );
         client.setEmail( dto.getEmail() );
         client.setEnableTwoFactor( dto.getEnableTwoFactor() );

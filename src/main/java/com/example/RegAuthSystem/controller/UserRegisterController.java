@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.RegAuthSystem.service.IClientService;
 import com.example.RegAuthSystem.service.IRegisterAccountService;
 import com.example.RegAuthSystem.service.dto.ClientDto;
-import com.example.RegAuthSystem.service.dto.ClientInfoDto;
 import com.example.RegAuthSystem.service.dto.RegisterUserDto;
 import com.example.RegAuthSystem.service.dto.RegistrationProgressRequestDto;
+import com.example.RegAuthSystem.service.dto.UpdateUserProfileDto;
 
 import jakarta.validation.Valid;
 
@@ -54,9 +54,9 @@ public class UserRegisterController {
 	@PostMapping(value = "/profile/{verify_code}")
 	public ResponseEntity<Object> updateUserProfile(
 			@PathVariable(name = "verify_code") String registrationVerificationCode,
-			@RequestBody ClientInfoDto clientInfoDto) {
+			@RequestBody UpdateUserProfileDto updateUserProfileDto) {
 		ClientDto clientDto = clientService.findByRegistrationVerificationCode(registrationVerificationCode);
-		return registerAccountServiceImpl.updateUserProfile(clientDto, clientInfoDto);
+		return registerAccountServiceImpl.updateUserProfile(clientDto, updateUserProfileDto);
 	}
 
 	/**

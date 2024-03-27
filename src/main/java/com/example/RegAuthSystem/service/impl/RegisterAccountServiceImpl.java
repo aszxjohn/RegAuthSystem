@@ -16,11 +16,13 @@ import com.example.RegAuthSystem.service.IRegisterAccountService;
 import com.example.RegAuthSystem.service.ISystemParameterSettingService;
 import com.example.RegAuthSystem.service.dto.ClientDto;
 import com.example.RegAuthSystem.service.dto.ClientInfoDto;
+import com.example.RegAuthSystem.service.dto.UpdateUserProfileDto;
 import com.example.common.config.HttpBody;
 import com.example.common.config.MessageCode;
 import com.example.common.config.ResponseResult;
 import com.example.common.enums.ClientStatusEnum;
 import com.example.orm.entity.Client;
+import com.example.orm.entity.ClientInfo;
 import com.example.orm.entity.EmailTemplate;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +40,7 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 	@Autowired
 	private EmailTemplateServiceImpl emailTemplateServiceImpl;
 	@Autowired
-	private IClientInfoService clientInfoService;
-
+	private ClientMapper clientMapper;
 
 	/**
 	 * 註冊新用戶和錯過驗證信的已註冊的用戶 依照帳號的狀態去處理對應的行為
@@ -52,10 +53,11 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 		Timestamp currentTime = Timestamp.from(Instant.now());
 		String associatedApi = "register_user";
 		Long emailExpirationTime = systemParameterSettingService.findEmailExpirationTime();
+		Client client = clientMapper.toEntity(clientDto);
 		// 初次登記會寄出驗證信件
 		if (clientDto.getStatus() == ClientStatusEnum.NEW_REGISTRATION.getStatus()) {
-			ClientDto newClientDto = clientService.createClient(clientDto.getEmail(), emailExpirationTime);
-			return this.sendVerificationEmail(newClientDto.getEmail(), newClientDto.getRegistrationVerificationCode(),
+			Client newClient = clientService.createClient(client.getEmail(), emailExpirationTime).orElse(null);
+			return this.sendVerificationEmail(newClient.getEmail(), newClient.getRegistrationVerificationCode(),
 					associatedApi) ? ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
 							: ResponseResult.failed(
 									HttpBody.build(MessageCode.FAILED, "initiateRegistrationWithEmail is fail."));
@@ -110,46 +112,32 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 	 */
 	@Override
 	public ResponseEntity<Object> checkUserRegistrationProgress(String registrationProgressVerificationCode) {
-		ClientDto clientDto = clientService
-				.findByRegistrationProgressVerificationCode(registrationProgressVerificationCode);
-		Timestamp currentTime = Timestamp.from(Instant.now());
+		return clientService.findByRegistrationProgressVerificationCode(registrationProgressVerificationCode)
+				.<ResponseEntity<Object>>map(client -> {
 
-		if (clientDto == null) {
-			return ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.ACCOUNT_DOES_NOT_EXIST, null));
-		}
+					Timestamp currentTime = Timestamp.from(Instant.now());
+					if (!client.getRegistrationProgressVerificationCode().isEmpty()
+							&& currentTime.before(client.getResetPasswordVerificationCodeExpiryTime())) {
+						return ResponseResult
+								.validateArgsFailed(HttpBody.build(MessageCode.VERIFY_EMAIL_STILL_VALID, null));
+					}
 
-		if (clientDto.getRegistrationProgressVerificationCode().isEmpty()
-				&& currentTime.before(clientDto.getResetPasswordVerificationCodeExpiryTime())) {
-			return ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.VERIFY_EMAIL_STILL_VALID, null));
+					ClientStatusEnum status = ClientStatusEnum.getClientStatusEnum(client.getStatus());
+					switch (status) {
+						case NEW_REGISTRATION:
+						case EMAIL_VERIFIED:
+						case BASIC_INFO_SUBMITTED:
+						case ASSISTANT_REVIEWED:
+						case STAFF_REVIEWED:
+						case MANAGER_REVIEWED:
+						case SUSPENDED:
+						case BANNED:
+							return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, status.getDescription()));
+						default:
+							return ResponseResult.failed(HttpBody.build(MessageCode.FAILED, null));
+					}
 
-		}
-
-		switch (ClientStatusEnum.getClientStatusEnum(clientDto.getStatus())) {
-		case NEW_REGISTRATION:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.NEW_REGISTRATION.getDescription()));
-		case EMAIL_VERIFIED:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.EMAIL_VERIFIED.getDescription()));
-		case BASIC_INFO_SUBMITTED:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BASIC_INFO_SUBMITTED.getDescription()));
-		case ASSISTANT_REVIEWED:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.ASSISTANT_REVIEWED.getDescription()));
-		case STAFF_REVIEWED:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.STAFF_REVIEWED.getDescription()));
-		case MANAGER_REVIEWED:
-			return ResponseResult
-					.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.MANAGER_REVIEWED.getDescription()));
-		case SUSPENDED:
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.SUSPENDED.getDescription()));
-		case BANNED:
-			return ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, ClientStatusEnum.BANNED.getDescription()));
-		default:
-			return ResponseResult.failed(HttpBody.build(MessageCode.FAILED, null));
-		}
+				}).orElse(ResponseResult.validateArgsFailed(HttpBody.build(MessageCode.ACCOUNT_DOES_NOT_EXIST, null)));
 	}
 
 	/**
@@ -178,10 +166,16 @@ public class RegisterAccountServiceImpl implements IRegisterAccountService {
 	}
 
 	@Override
-	public ResponseEntity<Object> updateUserProfile(ClientDto clientDto, ClientInfoDto clientInfoDto) {
-		clientInfoDto.setClientDto(clientDto);
-		clientInfoService.updateUserProfile(clientInfoDto);
-		return null;
+	public ResponseEntity<Object> updateUserProfile(ClientDto clientDto, UpdateUserProfileDto updateUserProfileDto) {
+		Client client = clientMapper.toEntity(clientDto);
+		ClientInfo clientInfo = new ClientInfo();
+		clientInfo.setClientAddress(updateUserProfileDto.getClientAddress());
+		clientInfo.setIdentificationNumber(updateUserProfileDto.getIdentificationNumber());
+		clientInfo.setPhoneNumbe(updateUserProfileDto.getPhoneNumbe());
+		client.setClientInfo(clientInfo);
+		return clientService.updateUserProfile(client)
+				? ResponseResult.ok(HttpBody.build(MessageCode.SUCCESS, null))
+				: ResponseResult.failed(HttpBody.build(MessageCode.FAILED, "updateUserProfile is fail."));
 	}
 
 }

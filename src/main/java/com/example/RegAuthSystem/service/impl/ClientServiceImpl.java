@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.support.console.Option;
 import com.example.RegAuthSystem.mapper.ClientMapper;
 import com.example.RegAuthSystem.service.IClientService;
 import com.example.RegAuthSystem.service.dto.ClientDto;
@@ -14,6 +15,9 @@ import com.example.common.utils.UuidUtil;
 import com.example.orm.entity.Client;
 import com.example.orm.repository.ClientRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ClientServiceImpl implements IClientService {
 
@@ -31,12 +35,7 @@ public class ClientServiceImpl implements IClientService {
 	 */
 	@Override
 	public ClientDto findByEmail(String email) {
-		return clientRepository.findByEmail(email).map(clientMapper::toDto).orElseGet(() -> {
-			ClientDto clientDto = new ClientDto();
-			clientDto.setEmail(email);
-			clientDto.setStatus(ClientStatusEnum.NEW_REGISTRATION.getStatus());
-			return clientDto;
-		});
+		return clientRepository.findByEmail(email).map(clientMapper::toDto).orElse(null);
 	}
 
 	/**
@@ -47,7 +46,7 @@ public class ClientServiceImpl implements IClientService {
 	 * @return
 	 */
 	@Override
-	public ClientDto createClient(String email, Long emailExpirationTime) {
+	public Optional<Client> createClient(String email, Long emailExpirationTime) {
 		Client client = new Client();
 		client.setEmail(email);
 		client.setStatus(ClientStatusEnum.EMAIL_VERIFIED.getStatus());
@@ -57,8 +56,8 @@ public class ClientServiceImpl implements IClientService {
 		client.setLoginFailCount(0);
 		client.setIsLock(false);
 		client.setEnableTwoFactor(true);
-		client = clientRepository.save(client);
-		return clientMapper.toDto(client);
+		Optional<Client> clientOptional = Optional.of(clientRepository.save(client));
+		return clientOptional;
 	}
 
 	/**
@@ -80,9 +79,8 @@ public class ClientServiceImpl implements IClientService {
 	 * @param registrationProgressVerificationCode
 	 */
 	@Override
-	public ClientDto findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode) {
-		return clientRepository.findByRegistrationProgressVerificationCode(registrationProgressVerificationCode)
-				.map(clientMapper::toDto).orElse(null);
+	public Optional<Client> findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode) {
+		return clientRepository.findByRegistrationProgressVerificationCode(registrationProgressVerificationCode);
 
 	}
 
@@ -107,6 +105,17 @@ public class ClientServiceImpl implements IClientService {
 	public ClientDto findByRegistrationVerificationCode(String registrationVerificationCode) {
 		return clientRepository.findByRegistrationVerificationCode(registrationVerificationCode)
 				.map(clientMapper::toDto).orElse(null);
+	}
+
+	@Override
+	public boolean updateUserProfile(Client client) {
+		try {
+			clientRepository.save(client);
+			return true;
+		} catch (Exception e) {
+			log.info("updateUserProfile fail : " + e.getMessage());
+			return false;
+		}
 	}
 
 }
