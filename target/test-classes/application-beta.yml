@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    jdbc-url: jdbc:mysql://locahost:3306/demo?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Taipei
-    username: root
-    password: john
-    driver-class-name: com.mysql.cj.jdbc.Driver
