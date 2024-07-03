@@ -2,26 +2,16 @@ package com.example.RegAuthSystem.service.dto;
 
 import java.sql.Timestamp;
 
-import com.example.common.enums.ClientStatusEnum;
 import com.example.orm.base.BaseDto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 
 @Data
-public class ClientDto  extends BaseDto{
+public class ClientDto extends BaseDto {
 
 	private static final long serialVersionUID = 1L;
-	
-	private Long clientId;
 
-	private Long clientInfoId;
+	private Long clientId;
 
 	private String customerNumber;
 
@@ -34,7 +24,7 @@ public class ClientDto  extends BaseDto{
 	private Integer loginFailCount;
 
 	private Timestamp loginSuccessDate;
-	
+
 	private String email;
 
 	private String password;
@@ -42,9 +32,9 @@ public class ClientDto  extends BaseDto{
 	private Long registerReviewId;
 
 	private String registrationVerificationCode;
-	
+
 	private Timestamp registrationVerificationCodeExpiryTime;
-	
+
 	private String registrationProgressVerificationCode;
 
 	private Timestamp registrationProgressVerificationCodeExpiryTime;
@@ -62,5 +52,8 @@ public class ClientDto  extends BaseDto{
 	private String twoFactorCode;
 
 	private Timestamp twoFactorCodeExpiryTime;
+	
+	private ClientInfoDto clientInfoDto;
+		
 
 }

@@ -10,31 +10,46 @@ public interface IClientService {
 	/**
 	 * 從透過Email查詢客戶資料
 	 * @param email
-	 * @return
 	 */
-	ClientDto findByEmail(String email);
+	ClientDto controllerFindByEmail(String email);
 
 	/**
 	 * 創立新的Client資料
 	 * @param email
 	 * @param emailExpirationTime
-	 * @return
 	 */
-	ClientDto createClient(String email, Long emailExpirationTime);
+	Optional<Client> createClient(String email, Long emailExpirationTime);
 
 	/**
 	 * 更新Client的Email RegistrationProgressVerificationCodeExpiryTime
 	 * @param clientDto
 	 * @param emailExpirationTime
-	 * @return
 	 */
-	ClientDto updateClientRegistrationVerificationCodeExpiryTime(ClientDto clientDto, Long emailExpirationTime);
+	void updateClientRegistrationVerificationCodeExpiryTime(ClientDto client, Long emailExpirationTime);
 
 	/**
 	 * 透過 RegistrationProgressVerificationCode 尋找Client
 	 * @param registrationProgressVerificationCode
+	 */
+	Optional<Client> findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode);
+
+	/**
+	 * 更新使用者的註冊進度驗證碼
+	 * @param clientDto
+	 * @param emailExpirationTime
+	 */
+	void updateClientRegistrationProgressVerificationCodeExpiryTime(ClientDto client, Long emailExpirationTime);
+
+	/**
+	 * 透過客戶的註冊驗證碼查詢Client資料
+	 * @param registrationVerificationCode
 	 * @return
 	 */
-	ClientDto findByRegistrationProgressVerificationCode(String registrationProgressVerificationCode);
+	ClientDto findByRegistrationVerificationCode(String registrationVerificationCode);
+
+	boolean updateUserProfile(Client client);
+
+	Optional<Client> serviceFindByEmail(String email);
+
 
 }

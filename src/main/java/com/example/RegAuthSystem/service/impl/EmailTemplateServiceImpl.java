@@ -10,13 +10,13 @@ import com.example.orm.entity.EmailTemplate;
 import com.example.orm.repository.EmailTemplateRepository;
 
 @Service
-public class EmailTemplateServiceImpl implements IEmailTemplateService{
+public class EmailTemplateServiceImpl implements IEmailTemplateService {
 	@Autowired
 	private EmailTemplateRepository emailTemplateRepository;
-	
 
 	/**
 	 * 透過associatedApi尋找信件模板
+	 * 
 	 * @param associatedApi
 	 * @return
 	 */

@@ -1,6 +1,5 @@
 package com.example.RegAuthSystem.service.dto;
 
-
 import com.example.orm.base.BaseDto;
 
 import jakarta.validation.constraints.Email;
@@ -14,6 +13,5 @@ public class RegisterUserDto extends BaseDto {
 	@Email
 	@NotNull
 	private String email;
-
 
 }

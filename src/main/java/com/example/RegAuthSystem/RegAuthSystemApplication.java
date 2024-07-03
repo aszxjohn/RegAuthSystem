@@ -35,13 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 @EnableJpaRepositories("com.example.orm.*")
 @EntityScan("com.example.orm.*")
 public class RegAuthSystemApplication implements CommandLineRunner {
-    @Value("${regAuthSystem.version}")
-    private String version;
+	@Value("${regAuthSystem.version}")
+	private String version;
 
 	public static void main(String[] args) throws Exception {
-		 ConfigurableApplicationContext ctx = SpringApplication.run(RegAuthSystemApplication.class, args);
+		ConfigurableApplicationContext ctx = SpringApplication.run(RegAuthSystemApplication.class, args);
 	}
-	
+
 	@Override
 	public void run(String... args) {
 		log.info("┏━━━┳━━━┳━━━┳━━┳━┓╋┏┳━━━┓");
